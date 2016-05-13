@@ -15,7 +15,7 @@
 					<hr>
 				</div>	
 				<div class="row">
-					<form id="formChat" role="form">
+					<form id="formChat" role="form" method="POST">
 						<div class="form-group">
 							<label for="user">User</label>
 							<input type="text" class="form-control" id="user" name="user" placeholder="Enter User">
@@ -44,14 +44,38 @@
 		
 			$(document).on("ready", function(){				
 				registrarMensajes();
+				$.ajaxSetup({"cache":false});
+				setInterval("cargaMensajes()",500);
 			});
 
-			function registrarMensajes(){
+			var registrarMensajes = function(){
 				$("#send").on("click",function(e){
 					e.preventDefault();
 					var frm = $("#formChat").serialize();
-					console.log( frm );
-				})
+					$.ajax({
+						type: "POST",
+						url: "register.php",
+						data: frm
+					}).done(function(info){
+					$("#message").val("");
+					var altura = $("#conversation").prop("scrollHeight");
+					$("#conversation").scrollTop(altura);
+					console.log(info);
+					})
+				});
+			}
+
+			var cargaMensajes = function(){
+				$.ajax({
+					type: "POST",
+					url: "conversation.php"
+				}).done(function(info){
+					$("#conversation").html(info);
+					$("#conversation p:last-child").css({"background-color":"lightgreen", 
+															"padding-botton": "20px"});
+					var altura = $("#conversation").prop("scrollHeight");
+					$("#conversation").scrollTop(altura);
+				});
 			}
 
 			
